@@ -1,0 +1,51 @@
+import type { ScenarioPack } from '../types/content';
+
+/**
+ * Market & selling — the flagship pack for Akosua the trader (PRD 2, 5.1).
+ * Situations are in Twi; the target phrases are the English she needs on the
+ * spot. The green/red apple example comes straight from the PRD flow (4.5).
+ *
+ * TODO(content): Twi situation copy must be reviewed and re-voiced by a native
+ * speaker who knows the market setting before launch (PRD 5.1).
+ */
+export const marketPack: ScenarioPack = {
+  id: 'market-en',
+  direction: 'learn-en',
+  title: 'Dwabɔ ne adetɔn',
+  emoji: '🧺',
+  color: '#1E7A46',
+  version: 1,
+  phrases: [
+    {
+      id: 'market-1',
+      situation:
+        'Sɛ wopɛ sɛ woka kyerɛ obi sɛ green apple no asa, na wowɔ red apple a, sɛɛ na woka no wɔ English mu.',
+      target: 'The green apples are finished, but I have red ones.',
+      gloss: 'Green apple no asa, nanso mewɔ red bi.',
+    },
+    {
+      id: 'market-2',
+      situation: 'Sɛ ɔtɔfoɔ bisa boɔ a, sɛɛ na wobɛbua no.',
+      target: 'This one is twenty cedis.',
+      gloss: 'Yei yɛ sidi aduonu.',
+    },
+    {
+      id: 'market-3',
+      situation: 'Sɛ wopɛ sɛ woka sɛ wobɛtew boɔ no so kakra a.',
+      target: 'I can reduce it a little for you.',
+      gloss: 'Metumi atew so kakra ama wo.',
+    },
+    {
+      id: 'market-4',
+      situation: 'Sɛ ɔtɔfoɔ pɛ sɛ ɔtua ka wɔ MoMo so a, sɛɛ na woka.',
+      target: 'You can pay with mobile money.',
+      gloss: 'Wobɛtumi atua wɔ MoMo so.',
+    },
+    {
+      id: 'market-5',
+      situation: 'Sɛ wopɛ sɛ woda obi ase sɛ watɔ bi a.',
+      target: 'Thank you, please come again.',
+      gloss: 'Meda wo ase, bra bio.',
+    },
+  ],
+};

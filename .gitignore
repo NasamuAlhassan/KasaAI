@@ -1,0 +1,15 @@
+# Secrets — never commit real env files (examples are fine)
+.env
+.env.*
+!.env.example
+mobile/.env
+supabase/.env
+
+# Local Claude settings
+.claude/settings.local.json
+
+# OS
+.DS_Store
+
+# Logs
+*.log
