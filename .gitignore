@@ -11,6 +11,9 @@ supabase/.env
 # Dependencies (mobile has its own ignore; this covers content/ tooling)
 node_modules/
 
+# Supabase CLI local state (project link cache, versions — machine-specific)
+supabase/.temp/
+
 # OS
 .DS_Store
 

@@ -18,10 +18,13 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
+drop policy if exists "profiles are self-readable" on public.profiles;
 create policy "profiles are self-readable"
   on public.profiles for select using (auth.uid() = id);
+drop policy if exists "profiles are self-insertable" on public.profiles;
 create policy "profiles are self-insertable"
   on public.profiles for insert with check (auth.uid() = id);
+drop policy if exists "profiles are self-updatable" on public.profiles;
 create policy "profiles are self-updatable"
   on public.profiles for update using (auth.uid() = id);
 
@@ -41,8 +44,10 @@ create index if not exists lesson_completions_user_idx
 
 alter table public.lesson_completions enable row level security;
 
+drop policy if exists "completions are self-readable" on public.lesson_completions;
 create policy "completions are self-readable"
   on public.lesson_completions for select using (auth.uid() = user_id);
+drop policy if exists "completions are self-insertable" on public.lesson_completions;
 create policy "completions are self-insertable"
   on public.lesson_completions for insert with check (auth.uid() = user_id);
 
@@ -67,6 +72,7 @@ create table if not exists public.packs (
 
 alter table public.packs enable row level security;
 
+drop policy if exists "published packs are world-readable" on public.packs;
 create policy "published packs are world-readable"
   on public.packs for select using (published = true);
 -- No insert/update/delete policies => only the service role can write packs.
@@ -82,8 +88,10 @@ begin
 end;
 $$;
 
+drop trigger if exists profiles_touch on public.profiles;
 create trigger profiles_touch before update on public.profiles
   for each row execute function public.touch_updated_at();
+drop trigger if exists packs_touch on public.packs;
 create trigger packs_touch before update on public.packs
   for each row execute function public.touch_updated_at();
 
