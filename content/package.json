@@ -1,0 +1,13 @@
+{
+  "name": "kasa-content",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kasa scenario content + audio generation/publishing tooling.",
+  "scripts": {
+    "publish-packs": "node scripts/generate-and-publish.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.0"
+  }
+}

@@ -30,6 +30,10 @@ export interface Phrase {
   target: string;
   /** Optional plain gloss of the target phrase in the bridge language. */
   gloss?: string;
+  /** Pre-generated audio URL for the situation prompt (bridge language). */
+  situationAudio?: string;
+  /** Pre-generated audio URL for the target phrase (target language). */
+  targetAudio?: string;
 }
 
 export interface ScenarioPack {

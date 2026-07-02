@@ -10,12 +10,13 @@ import { PackTile } from '../components/PackTile';
 import { StreakStrip } from '../components/StreakStrip';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
+import { usePacks } from '../state/packs';
 import { DIRECTIONS } from '../types/content';
-import { packsForDirection } from '../content';
 import type { ScreenProps } from '../navigation/types';
 
 export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const { direction, streakDays } = useProgress();
+  const { packsForDirection } = usePacks();
   const dir = direction ?? 'learn-en';
   const bridge = DIRECTIONS[dir].bridge;
   const s = stringsFor(bridge);

@@ -8,6 +8,9 @@ supabase/.env
 # Local Claude settings
 .claude/settings.local.json
 
+# Dependencies (mobile has its own ignore; this covers content/ tooling)
+node_modules/
+
 # OS
 .DS_Store
 

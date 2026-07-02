@@ -20,16 +20,19 @@ import { tts } from '../services/tts';
 import { asr } from '../services/asr';
 import { brain } from '../services/brain';
 import { scorePhrase, ScoreResult } from '../services/scoring';
+import { playUri } from '../services/audioPlayback';
+import { ensureAudioCached, downloadPack } from '../services/packAudio';
 import { useRecorder } from '../hooks/useRecorder';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
+import { usePacks } from '../state/packs';
 import { DIRECTIONS } from '../types/content';
-import { packById } from '../content';
 import type { ScreenProps } from '../navigation/types';
 
 export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
   const { packId } = route.params;
   const { direction } = useProgress();
+  const { packById } = usePacks();
   const pack = packById(packId);
   const dir = direction ?? pack?.direction ?? 'learn-en';
   const { bridge, target: targetLang } = DIRECTIONS[dir];
@@ -49,22 +52,45 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
 
   const phrase = pack?.phrases[index];
 
-  // Intro each phrase: speak the situation, then the target phrase, slowly.
+  // Cache the whole pack's audio for offline use on first open (no-op if the
+  // pack has no pre-generated audio yet).
+  useEffect(() => {
+    if (pack) downloadPack(pack).catch(() => {});
+  }, [pack?.id]);
+
+  // Play a prompt: prefer pre-generated/cached audio, fall back to live/device TTS.
+  const playPart = useCallback(
+    async (kind: 'situation' | 'target') => {
+      if (!pack || !phrase) return;
+      const text = kind === 'situation' ? phrase.situation : phrase.target;
+      const lang = kind === 'situation' ? bridge : targetLang;
+      const remote = kind === 'situation' ? phrase.situationAudio : phrase.targetAudio;
+      const uri = await ensureAudioCached(pack.id, phrase.id, kind, remote);
+      if (uri) {
+        await playUri(uri);
+        return;
+      }
+      await tts.speak(text, lang);
+    },
+    [pack, phrase, bridge, targetLang],
+  );
+
+  // Intro each phrase: play the situation, then the target phrase, slowly.
   useEffect(() => {
     if (!phrase) return;
     setResult(null);
     setBrainMsg(null);
     setMicState('idle');
     (async () => {
-      await tts.speak(phrase.situation, bridge);
-      if (mounted.current) await tts.speak(phrase.target, targetLang);
+      await playPart('situation');
+      if (mounted.current) await playPart('target');
     })();
     return () => tts.stop();
-  }, [phrase, bridge, targetLang]);
+  }, [phrase, playPart]);
 
   const replayTarget = useCallback(() => {
-    if (phrase) tts.speak(phrase.target, targetLang);
-  }, [phrase, targetLang]);
+    void playPart('target');
+  }, [playPart]);
 
   const onMic = useCallback(async () => {
     if (!phrase) return;
