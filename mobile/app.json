@@ -29,7 +29,9 @@
         {
           "microphonePermission": "Kasa needs your microphone so you can practise speaking and get feedback."
         }
-      ]
+      ],
+      "expo-font",
+      "expo-asset"
     ]
   }
 }

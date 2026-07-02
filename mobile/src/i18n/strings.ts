@@ -25,6 +25,7 @@ export interface Strings {
   lessonReplay: string;
   lessonNext: string;
   lessonTryAgain: string;
+  micPermission: string; // shown + voiced if the mic is blocked
   feedbackGood: string;
   feedbackAlmost: string;
   feedbackAgain: string;
@@ -58,6 +59,7 @@ const twi: Strings = {
   lessonReplay: 'Ti bio',
   lessonNext: 'Kɔ nea edi so',
   lessonTryAgain: 'Sɔ hwɛ bio',
+  micPermission: 'Fa kwan ma microphone no na yɛatumi atie wo.',
   feedbackGood: 'Papa paa!',
   feedbackAlmost: 'Ɛbɛn! Sɔ hwɛ bio.',
   feedbackAgain: 'Yɛnsɔ hwɛ bio, brɛoo.',
@@ -91,6 +93,7 @@ const en: Strings = {
   lessonReplay: 'Play again',
   lessonNext: 'Next',
   lessonTryAgain: 'Try again',
+  micPermission: 'Please allow the microphone so I can hear you.',
   feedbackGood: 'Very good!',
   feedbackAlmost: 'Close! Try once more.',
   feedbackAgain: 'Let’s try that again, gently.',

@@ -19,6 +19,10 @@ export function stopPlayback(): void {
   }
 }
 
+/** Longest a single clip could reasonably run; safety net so a missed
+ * "didJustFinish" event can never leave a prompt awaiting forever. */
+const MAX_CLIP_MS = 20000;
+
 /** Play an already-created player and resolve when it finishes. */
 function awaitPlayer(player: AudioPlayer): Promise<void> {
   current = player;
@@ -27,6 +31,7 @@ function awaitPlayer(player: AudioPlayer): Promise<void> {
     const finish = () => {
       if (settled) return;
       settled = true;
+      clearTimeout(timer);
       sub?.remove?.();
       if (current === player) {
         try {
@@ -41,6 +46,7 @@ function awaitPlayer(player: AudioPlayer): Promise<void> {
     const sub = player.addListener('playbackStatusUpdate', (status) => {
       if (status.didJustFinish) finish();
     });
+    const timer = setTimeout(finish, MAX_CLIP_MS);
     player.play();
   });
 }

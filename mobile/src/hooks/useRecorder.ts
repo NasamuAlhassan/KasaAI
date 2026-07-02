@@ -17,10 +17,10 @@ export function useRecorder() {
   const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
-    // Allow playback + recording; keep audio audible in silent mode on iOS.
-    setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true }).catch(
-      () => {},
-    );
+    // Keep audio audible in silent mode. Recording is enabled only while we're
+    // actually recording (below) — leaving it on globally makes playback quiet
+    // and routes to the earpiece on iOS.
+    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   }, []);
 
   const start = useCallback(async (): Promise<boolean> => {
@@ -30,6 +30,9 @@ export function useRecorder() {
       return false;
     }
     setPermissionDenied(false);
+    await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true }).catch(
+      () => {},
+    );
     await recorder.prepareToRecordAsync();
     recorder.record();
     setIsRecording(true);
@@ -40,6 +43,8 @@ export function useRecorder() {
     if (!recorder.isRecording && !isRecording) return null;
     await recorder.stop();
     setIsRecording(false);
+    // Hand the audio route back to playback (important for iOS loudness).
+    await setAudioModeAsync({ allowsRecording: false }).catch(() => {});
     return recorder.uri ?? null;
   }, [recorder, isRecording]);
 

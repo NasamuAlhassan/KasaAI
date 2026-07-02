@@ -42,9 +42,11 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
   const [micState, setMicState] = useState<MicState>('idle');
   const [result, setResult] = useState<ScoreResult | null>(null);
   const [brainMsg, setBrainMsg] = useState<string | null>(null);
+  const [micBlocked, setMicBlocked] = useState(false);
 
   const recorder = useRecorder();
   const mounted = useRef(true);
+  const startingRef = useRef(false); // guards against double-tap during start
   useEffect(() => () => {
     mounted.current = false;
     tts.stop();
@@ -95,9 +97,20 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
   const onMic = useCallback(async () => {
     if (!phrase) return;
     if (micState === 'idle') {
+      if (startingRef.current) return; // ignore rapid double-taps
+      startingRef.current = true;
       tts.stop();
       const ok = await recorder.start();
-      if (ok && mounted.current) setMicState('recording');
+      startingRef.current = false;
+      if (!mounted.current) return;
+      if (ok) {
+        setMicBlocked(false);
+        setMicState('recording');
+      } else {
+        // Permission denied: say so, out loud, instead of failing silently.
+        setMicBlocked(true);
+        tts.speak(s.micPermission, bridge);
+      }
       return;
     }
     if (micState === 'recording') {
@@ -120,7 +133,7 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
       setMicState('idle');
       tts.speak(msg, bridge);
     }
-  }, [phrase, micState, recorder, targetLang, bridge]);
+  }, [phrase, micState, recorder, targetLang, bridge, s]);
 
   const goNext = useCallback(() => {
     tts.stop();
@@ -210,6 +223,11 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
 
       {/* 3. Mic + next actions */}
       <View style={styles.footer}>
+        {micBlocked && (
+          <Text style={styles.micBlocked} accessibilityRole="alert">
+            {s.micPermission}
+          </Text>
+        )}
         {!result ? (
           <MicButton state={micState} label={micLabel} onPress={onMic} />
         ) : (
@@ -284,6 +302,13 @@ const styles = StyleSheet.create({
   gloss: { ...typography.body, color: colors.inkSoft, fontStyle: 'italic' },
   replayBtn: { alignSelf: 'stretch' },
   footer: { paddingTop: spacing.sm },
+  micBlocked: {
+    ...typography.caption,
+    color: colors.clay,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+    fontWeight: '700',
+  },
   actions: { flexDirection: 'row', gap: spacing.sm },
   actionBtn: { flex: 1 },
 });
