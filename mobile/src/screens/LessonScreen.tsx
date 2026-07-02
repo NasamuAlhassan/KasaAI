@@ -84,6 +84,8 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
         bridge,
         bucket: res.bucket,
         firstMiss: res.firstMiss,
+        target: phrase.target,
+        heard,
       });
       if (!mounted.current) return;
       setResult(res);

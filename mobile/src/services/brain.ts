@@ -5,20 +5,25 @@
  * never a harsh score. The response is text in the *bridge* language, which the
  * caller then voices with the TTS provider.
  *
- *  - now:   deterministic, warm templates (no network, works offline).
- *  - later: Gemini free tier via the orchestration layer for richer, varied
- *           phrasing. Same interface, so screens don't change.
+ *  - backend configured: Gemini via the `respond` edge function (varied phrasing).
+ *  - otherwise / on failure: warm deterministic templates (offline-safe).
  */
 
 import type { LanguageCode } from '../types/content';
 import type { FeedbackBucket } from './scoring';
 import { stringsFor } from '../i18n/strings';
+import { isSupabaseConfigured } from '../config/env';
+import { remoteRespond } from './remote';
 
 export interface BrainInput {
   bridge: LanguageCode;
   bucket: FeedbackBucket;
   /** First target word the user missed, for a targeted, gentle nudge. */
   firstMiss?: string;
+  /** The phrase being practised (helps the model react specifically). */
+  target?: string;
+  /** What ASR heard the user say. */
+  heard?: string;
 }
 
 export interface BrainProvider {
@@ -30,7 +35,6 @@ class TemplateBrain implements BrainProvider {
     const s = stringsFor(bridge);
     if (bucket === 'good') return s.feedbackGood;
 
-    // "Almost": praise, then a specific, kind nudge on the missed word.
     if (bucket === 'almost') {
       if (firstMiss) {
         return bridge === 'twi'
@@ -44,4 +48,20 @@ class TemplateBrain implements BrainProvider {
   }
 }
 
-export const brain: BrainProvider = new TemplateBrain();
+/** Gemini-backed brain; falls back to templates on any failure. */
+class RemoteBrain implements BrainProvider {
+  private fallback = new TemplateBrain();
+
+  async respond(input: BrainInput): Promise<string> {
+    try {
+      return await remoteRespond(input);
+    } catch (e) {
+      console.warn('[kasa] remote brain failed, using templates:', e);
+      return this.fallback.respond(input);
+    }
+  }
+}
+
+export const brain: BrainProvider = isSupabaseConfigured
+  ? new RemoteBrain()
+  : new TemplateBrain();

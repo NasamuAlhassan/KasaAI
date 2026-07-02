@@ -1,27 +1,27 @@
 /**
  * Text-to-speech (KasaAI's voice — PRD 7.3).
  *
- * Interface-first so providers swap without touching the UI:
- *  - now:   device TTS via expo-speech (real English voice immediately; Twi is
- *           best-effort and will sound wrong on most devices).
- *  - later: Khaya (GhanaNLP) / Abena Ghanaian-English via the orchestration
- *           layer, with results pre-generated and cached for offline packs.
+ * When the backend is configured, speaks with the real Ghanaian voices from the
+ * `speak` edge function (Khaya for Twi, Abena Ghanaian-English for English). If
+ * that call fails, or when there's no backend, it falls back to the device voice
+ * so the app always talks. Screens use the same `speak/stop` interface either way.
  */
 
 import * as Speech from 'expo-speech';
 import type { LanguageCode } from '../types/content';
+import { isSupabaseConfigured } from '../config/env';
+import { remoteSpeak } from './remote';
+import { playBase64Audio, stopPlayback } from './audioPlayback';
 
 export interface TtsProvider {
   speak(text: string, lang: LanguageCode): Promise<void>;
   stop(): void;
 }
 
-/** Best-effort BCP-47 tags for on-device voices. */
+/** Best-effort BCP-47 tags for on-device voices (fallback path). */
 const LANG_TAG: Record<LanguageCode, string> = {
-  // Ghanaian English has no device voice; en-GB is a closer proxy than en-US.
-  en: 'en-GB',
-  // Twi ('ak'/'tw') is rarely installed; kept so we degrade rather than crash.
-  twi: 'tw',
+  en: 'en-GB', // closer to Ghanaian English than en-US
+  twi: 'tw', // rarely installed; degrades rather than crashing
 };
 
 class DeviceTtsProvider implements TtsProvider {
@@ -30,11 +30,11 @@ class DeviceTtsProvider implements TtsProvider {
       Speech.stop();
       Speech.speak(text, {
         language: LANG_TAG[lang],
-        rate: 0.92, // a touch slow, so learners can follow (PRD 4.5)
+        rate: 0.92,
         pitch: 1.0,
         onDone: () => resolve(),
         onStopped: () => resolve(),
-        onError: () => resolve(), // never block the UI on a TTS failure
+        onError: () => resolve(),
       });
     });
   }
@@ -44,4 +44,27 @@ class DeviceTtsProvider implements TtsProvider {
   }
 }
 
-export const tts: TtsProvider = new DeviceTtsProvider();
+/** Prefers real voices from the backend; falls back to the device voice. */
+class SmartTtsProvider implements TtsProvider {
+  private device = new DeviceTtsProvider();
+
+  async speak(text: string, lang: LanguageCode): Promise<void> {
+    if (isSupabaseConfigured) {
+      try {
+        const { audioBase64, mime } = await remoteSpeak(text, lang);
+        await playBase64Audio(audioBase64, mime);
+        return;
+      } catch (e) {
+        console.warn('[kasa] remote TTS failed, using device voice:', e);
+      }
+    }
+    await this.device.speak(text, lang);
+  }
+
+  stop(): void {
+    stopPlayback();
+    this.device.stop();
+  }
+}
+
+export const tts: TtsProvider = new SmartTtsProvider();
