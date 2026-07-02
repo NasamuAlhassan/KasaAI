@@ -33,6 +33,10 @@ export interface Strings {
   streakLabel: (n: number) => string;
   continueWord: string;
   practiseAgain: string;
+  consentTitle: string;
+  consentBody: string; // voiced
+  consentUnderstand: string;
+  consentImproveLabel: string;
 }
 
 const twi: Strings = {
@@ -62,6 +66,11 @@ const twi: Strings = {
   streakLabel: (n) => `Nnafua ${n}`,
   continueWord: 'Kɔ so',
   practiseAgain: 'San yɛ bio',
+  consentTitle: 'Wo nne banbɔ',
+  consentBody:
+    'Sɛ woreyɛ adesua no, app yi tie wo nne kakra sɛnea ɛbɛtumi aboa wo. Yɛmfa nsie. Sɛ wopɛ sɛ woboa ma KasaAI tu mpɔn a, mia toggle no.',
+  consentUnderstand: 'Mate aseɛ, yɛmfi ase',
+  consentImproveLabel: 'Boa ma KasaAI tu mpɔn (fa wo nne kyɛ)',
 };
 
 const en: Strings = {
@@ -90,6 +99,11 @@ const en: Strings = {
   streakLabel: (n) => `${n}-day streak`,
   continueWord: 'Continue',
   practiseAgain: 'Practise again',
+  consentTitle: 'Your privacy',
+  consentBody:
+    'When you practise, the app listens to your voice so it can give you feedback. We don’t keep your recordings. If you’d like to help improve KasaAI, you can turn on sharing below.',
+  consentUnderstand: 'I understand, let’s start',
+  consentImproveLabel: 'Help improve KasaAI (share my recordings)',
 };
 
 const TABLE: Record<LanguageCode, Strings> = { twi, en };

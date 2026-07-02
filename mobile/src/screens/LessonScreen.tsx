@@ -167,6 +167,9 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
         {/* 1. Situation, bridge language */}
         <Pressable
           style={styles.situationCard}
+          accessibilityRole="button"
+          accessibilityLabel={phrase.situation}
+          accessibilityHint="Plays the situation aloud"
           onPress={() => tts.speak(phrase.situation, bridge)}
         >
           <Ionicons name="volume-high" size={22} color={colors.inkSoft} />
@@ -177,7 +180,13 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
         <View style={styles.targetBlock}>
           <View style={styles.words}>
             {phrase.target.split(/\s+/).map((w, i) => (
-              <Pressable key={`${w}-${i}`} onPress={() => tts.speak(w, targetLang)}>
+              <Pressable
+                key={`${w}-${i}`}
+                accessibilityRole="button"
+                accessibilityLabel={w}
+                accessibilityHint="Plays this word"
+                onPress={() => tts.speak(w, targetLang)}
+              >
                 <Text style={styles.targetWord}>{w}</Text>
               </Pressable>
             ))}

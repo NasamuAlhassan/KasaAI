@@ -5,6 +5,7 @@ export type RootStackParamList = {
   Welcome: undefined;
   LanguageSelect: undefined;
   Onboarding: undefined;
+  Consent: undefined;
   Home: undefined;
   Lesson: { packId: string };
   LessonComplete: { packId: string };

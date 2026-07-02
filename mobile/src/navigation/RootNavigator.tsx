@@ -5,6 +5,7 @@ import { colors } from '../theme/tokens';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { LanguageSelectScreen } from '../screens/LanguageSelectScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
+import { ConsentScreen } from '../screens/ConsentScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LessonScreen } from '../screens/LessonScreen';
 import { LessonCompleteScreen } from '../screens/LessonCompleteScreen';
@@ -24,6 +25,7 @@ export function RootNavigator() {
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="LanguageSelect" component={LanguageSelectScreen} />
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+      <Stack.Screen name="Consent" component={ConsentScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Lesson" component={LessonScreen} />
       <Stack.Screen name="LessonComplete" component={LessonCompleteScreen} />

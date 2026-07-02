@@ -40,7 +40,7 @@ export function OnboardingScreen({ navigation }: ScreenProps<'Onboarding'>) {
         color={colors.green}
         onPress={() => {
           tts.stop();
-          navigation.replace('Home');
+          navigation.replace('Consent');
         }}
       />
     </SafeAreaView>

@@ -26,6 +26,10 @@ interface ProgressData {
   streakDays: number;
   lastActiveDate: string | null; // local YYYY-MM-DD
   completedPackIds: string[];
+  /** Voice-recording consent given (PRD 8). */
+  consentGiven: boolean;
+  /** Opt-in to contribute recordings to improve the models (PRD 8). */
+  improveOptIn: boolean;
 }
 
 const EMPTY: ProgressData = {
@@ -33,12 +37,15 @@ const EMPTY: ProgressData = {
   streakDays: 0,
   lastActiveDate: null,
   completedPackIds: [],
+  consentGiven: false,
+  improveOptIn: false,
 };
 
 interface ProgressContextValue extends ProgressData {
   hydrated: boolean;
   chooseDirection: (d: DirectionId) => void;
   completeLesson: (packId: string) => void;
+  giveConsent: (improveOptIn: boolean) => void;
   resetAll: () => void;
 }
 
@@ -154,11 +161,24 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     [data, persist],
   );
 
+  const giveConsent = useCallback(
+    (improveOptIn: boolean) =>
+      persist({ ...data, consentGiven: true, improveOptIn }),
+    [data, persist],
+  );
+
   const resetAll = useCallback(() => persist(EMPTY), [persist]);
 
   const value = useMemo<ProgressContextValue>(
-    () => ({ ...data, hydrated, chooseDirection, completeLesson, resetAll }),
-    [data, hydrated, chooseDirection, completeLesson, resetAll],
+    () => ({
+      ...data,
+      hydrated,
+      chooseDirection,
+      completeLesson,
+      giveConsent,
+      resetAll,
+    }),
+    [data, hydrated, chooseDirection, completeLesson, giveConsent, resetAll],
   );
 
   return (

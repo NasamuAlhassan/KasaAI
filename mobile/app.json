@@ -10,6 +10,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.nasamualhassan.kasa",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#FBF3E4",
         "foregroundImage": "./assets/android-icon-foreground.png",
