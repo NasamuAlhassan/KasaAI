@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography } from '../theme/tokens';
 import { tts } from '../services/tts';
 import { stringsFor } from '../i18n/strings';
+import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import type { ScreenProps } from '../navigation/types';
 
 export function WelcomeScreen({ navigation }: ScreenProps<'Welcome'>) {
@@ -29,6 +30,7 @@ export function WelcomeScreen({ navigation }: ScreenProps<'Welcome'>) {
             <Ionicons name="chatbubbles" size={60} color={colors.onColor} />
           </View>
           <Text style={styles.greeting}>{s.welcomeGreeting}</Text>
+          <SpeakingIndicator bridge="twi" />
         </View>
         <Text style={styles.hint}>{s.welcomeTapToStart}</Text>
       </SafeAreaView>

@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography } from '../theme/tokens';
 import { BigButton } from '../components/BigButton';
+import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import { tts } from '../services/tts';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
@@ -33,6 +34,7 @@ export function OnboardingScreen({ navigation }: ScreenProps<'Onboarding'>) {
           <Ionicons name="chatbubbles-outline" size={28} color={colors.green} />
           <Text style={styles.step}>{s.onboardingBody}</Text>
         </View>
+        <SpeakingIndicator bridge={bridge} />
       </View>
       <BigButton
         label={s.onboardingStart}

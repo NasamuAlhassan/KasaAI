@@ -22,6 +22,8 @@ export interface Strings {
   lessonYourTurn: string;
   lessonTapToSpeak: string;
   lessonListening: string;
+  lessonThinking: string;
+  kasaSpeaking: string;
   lessonReplay: string;
   lessonNext: string;
   lessonTryAgain: string;
@@ -56,6 +58,8 @@ const twi: Strings = {
   lessonYourTurn: 'Wo berɛ nie',
   lessonTapToSpeak: 'Mia na kasa',
   lessonListening: 'Meretie…',
+  lessonThinking: 'Merehwehwɛ mmuae…',
+  kasaSpeaking: 'KasaAI rekasa…',
   lessonReplay: 'Ti bio',
   lessonNext: 'Kɔ nea edi so',
   lessonTryAgain: 'Sɔ hwɛ bio',
@@ -90,6 +94,8 @@ const en: Strings = {
   lessonYourTurn: 'Your turn',
   lessonTapToSpeak: 'Tap and speak',
   lessonListening: 'Listening…',
+  lessonThinking: 'Thinking…',
+  kasaSpeaking: 'KasaAI is speaking…',
   lessonReplay: 'Play again',
   lessonNext: 'Next',
   lessonTryAgain: 'Try again',

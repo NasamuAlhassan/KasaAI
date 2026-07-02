@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography } from '../theme/tokens';
 import { BigButton } from '../components/BigButton';
+import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import { tts } from '../services/tts';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
@@ -33,6 +34,7 @@ export function LanguageSelectScreen({ navigation }: ScreenProps<'LanguageSelect
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.prompt}>{s.chooseLanguagePrompt}</Text>
+      <SpeakingIndicator bridge="twi" />
       <View style={styles.buttons}>
         <BigButton
           label={s.learnEnglish}

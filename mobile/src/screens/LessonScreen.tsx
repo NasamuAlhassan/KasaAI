@@ -16,6 +16,7 @@ import { colors, radius, spacing, typography } from '../theme/tokens';
 import { MicButton, MicState } from '../components/MicButton';
 import { FeedbackCue } from '../components/FeedbackCue';
 import { BigButton } from '../components/BigButton';
+import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import { tts } from '../services/tts';
 import { asr } from '../services/asr';
 import { brain } from '../services/brain';
@@ -162,7 +163,7 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
     micState === 'recording'
       ? s.lessonListening
       : micState === 'thinking'
-        ? s.lessonListening
+        ? s.lessonThinking
         : s.lessonTapToSpeak;
 
   return (
@@ -175,6 +176,8 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
           <Text style={styles.demoTag}>demo feedback</Text>
         )}
       </View>
+
+      <SpeakingIndicator bridge={bridge} />
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* 1. Situation, bridge language */}

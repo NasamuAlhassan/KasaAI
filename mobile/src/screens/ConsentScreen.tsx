@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography } from '../theme/tokens';
 import { BigButton } from '../components/BigButton';
+import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import { tts } from '../services/tts';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
@@ -35,6 +36,7 @@ export function ConsentScreen({ navigation }: ScreenProps<'Consent'>) {
         <View style={styles.card}>
           <Text style={styles.text}>{s.consentBody}</Text>
         </View>
+        <SpeakingIndicator bridge={bridge} />
 
         <View
           style={styles.toggleRow}
