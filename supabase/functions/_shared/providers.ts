@@ -78,12 +78,19 @@ export async function transcribe(
 }
 
 async function whisperAsr(audioBase64: string, mime: string): Promise<string> {
-  // OpenAI-compatible endpoint: self-hosted faster-whisper / whisper.cpp / Groq.
-  const base = env('WHISPER_BASE_URL'); // e.g. http://your-host:9000
+  // OpenAI-compatible endpoint. Default target is Groq's hosted Whisper
+  // (fast + cheap); also works with self-hosted faster-whisper / whisper.cpp.
+  // Normalise the base so a trailing "/v1" isn't doubled (Groq's base is
+  // https://api.groq.com/openai/v1, self-hosts are usually http://host:9000).
+  const raw = env('WHISPER_BASE_URL', 'https://api.groq.com/openai').replace(
+    /\/+$/,
+    '',
+  );
+  const base = raw.endsWith('/v1') ? raw.slice(0, -3) : raw;
   const bytes = fromBase64(audioBase64);
   const form = new FormData();
   form.append('file', new Blob([bytes], { type: mime }), 'audio.m4a');
-  form.append('model', env('WHISPER_MODEL', 'whisper-1'));
+  form.append('model', env('WHISPER_MODEL', 'whisper-large-v3-turbo'));
   form.append('language', 'en');
   const res = await fetch(`${base}/v1/audio/transcriptions`, {
     method: 'POST',

@@ -43,7 +43,8 @@ checklist to bring it live, then what's next.
 8. `cp supabase/.env.example supabase/.env`, fill in the keys you have:
    - **Khaya** key (you said you'd get this from GhanaNLP)
    - **Gemini** key (https://aistudio.google.com — free)
-   - **Whisper**: needs a host (see "Decisions I need from you" below)
+   - **Whisper via Groq** (decided): free key at https://console.groq.com →
+     paste as `WHISPER_API_KEY`. Base URL + model are already pre-set for Groq.
 9. `supabase secrets set --env-file supabase/.env`
 
 Each key you add lights up that service; until then the app uses its local
@@ -53,8 +54,8 @@ device-TTS + mock-ASR fallbacks, so it always runs.
 
 ## Decisions I need from you (leave answers in chat)
 
-1. **Whisper hosting** — self-host on a GPU box, or use a hosted Whisper
-   (Groq is cheapest/fastest) for the MVP? This is the one real infra choice.
+1. ✅ **Whisper hosting** — decided: **Groq hosted**. Config is pre-set; you just
+   add a Groq API key (https://console.groq.com).
 2. **Khaya endpoints** — when you have the docs, confirm the TTS/ASR paths so I
    can replace the `TODO(verify)` guesses in `supabase/functions/_shared/providers.ts`.
 3. **Icons** — OK to swap the emoji placeholders to `@expo/vector-icons` (design
