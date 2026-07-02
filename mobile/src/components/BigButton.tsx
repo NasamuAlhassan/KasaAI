@@ -5,7 +5,8 @@
  *   what the button does ("Each button plays its own label on tap-and-hold").
  */
 import React from 'react';
-import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, TAP_MIN, typography } from '../theme/tokens';
 import { tts } from '../services/tts';
 import type { LanguageCode } from '../types/content';
@@ -17,6 +18,8 @@ interface Props {
   speakLang: LanguageCode;
   variant?: 'primary' | 'secondary' | 'plain';
   color?: string;
+  /** Optional leading vector icon (Ionicons glyph name). */
+  icon?: keyof typeof Ionicons.glyphMap;
   style?: ViewStyle;
 }
 
@@ -26,6 +29,7 @@ export function BigButton({
   speakLang,
   variant = 'primary',
   color,
+  icon,
   style,
 }: Props) {
   const bg =
@@ -52,7 +56,10 @@ export function BigButton({
         style,
       ]}
     >
-      <Text style={[styles.label, { color: fg }]}>{label}</Text>
+      <View style={styles.row}>
+        {icon && <Ionicons name={icon} size={26} color={fg} />}
+        <Text style={[styles.label, { color: fg }]}>{label}</Text>
+      </View>
     </Pressable>
   );
 }
@@ -67,5 +74,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   label: { ...typography.label, textAlign: 'center' },
 });

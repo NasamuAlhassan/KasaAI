@@ -6,6 +6,7 @@
  */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, radius, spacing, typography } from '../theme/tokens';
 import { tts } from '../services/tts';
 import type { LanguageCode, ScenarioPack } from '../types/content';
@@ -29,7 +30,15 @@ export function PackTile({ pack, bridge, onPress }: Props) {
       ]}
     >
       <View style={[styles.iconWrap, { backgroundColor: pack.color }]}>
-        <Text style={styles.emoji}>{pack.emoji}</Text>
+        {pack.icon ? (
+          <MaterialCommunityIcons
+            name={pack.icon as keyof typeof MaterialCommunityIcons.glyphMap}
+            size={40}
+            color={colors.onColor}
+          />
+        ) : (
+          <Text style={styles.emoji}>{pack.emoji}</Text>
+        )}
       </View>
       <Text style={styles.title} numberOfLines={2}>
         {pack.title}

@@ -6,6 +6,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography } from '../theme/tokens';
 import { BigButton } from '../components/BigButton';
 import { tts } from '../services/tts';
@@ -29,7 +30,8 @@ export function OnboardingScreen({ navigation }: ScreenProps<'Onboarding'>) {
       <View style={styles.body}>
         <Text style={styles.title}>{s.onboardingTitle}</Text>
         <View style={styles.card}>
-          <Text style={styles.step}>🗣️  {s.onboardingBody}</Text>
+          <Ionicons name="chatbubbles-outline" size={28} color={colors.green} />
+          <Text style={styles.step}>{s.onboardingBody}</Text>
         </View>
       </View>
       <BigButton
@@ -55,6 +57,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
     padding: spacing.lg,
+    gap: spacing.sm,
   },
   step: { ...typography.body, color: colors.ink },
 });

@@ -11,6 +11,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, typography } from '../theme/tokens';
 import { MicButton, MicState } from '../components/MicButton';
 import { FeedbackCue } from '../components/FeedbackCue';
@@ -142,7 +143,8 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
           style={styles.situationCard}
           onPress={() => tts.speak(phrase.situation, bridge)}
         >
-          <Text style={styles.situationText}>🔊  {phrase.situation}</Text>
+          <Ionicons name="volume-high" size={22} color={colors.inkSoft} />
+          <Text style={styles.situationText}>{phrase.situation}</Text>
         </Pressable>
 
         {/* 2. Target phrase: tappable words + replay */}
@@ -156,7 +158,8 @@ export function LessonScreen({ route, navigation }: ScreenProps<'Lesson'>) {
           </View>
           {phrase.gloss && <Text style={styles.gloss}>{phrase.gloss}</Text>}
           <BigButton
-            label={`🔊  ${s.lessonReplay}`}
+            label={s.lessonReplay}
+            icon="volume-high"
             speakLang={bridge}
             variant="secondary"
             onPress={replayTarget}
@@ -214,11 +217,14 @@ const styles = StyleSheet.create({
   },
   scroll: { gap: spacing.lg, paddingVertical: spacing.md },
   situationCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
     backgroundColor: colors.surfaceAlt,
     borderRadius: radius.lg,
     padding: spacing.md,
   },
-  situationText: { ...typography.body, color: colors.ink },
+  situationText: { ...typography.body, color: colors.ink, flex: 1 },
   targetBlock: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,

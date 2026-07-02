@@ -5,6 +5,7 @@
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography } from '../theme/tokens';
 import { tts } from '../services/tts';
 import { stringsFor } from '../i18n/strings';
@@ -25,7 +26,7 @@ export function WelcomeScreen({ navigation }: ScreenProps<'Welcome'>) {
         <View style={styles.hero}>
           <Text style={styles.mark}>Kasa</Text>
           <View style={styles.avatar}>
-            <Text style={styles.avatarEmoji}>🌟</Text>
+            <Ionicons name="chatbubbles" size={60} color={colors.onColor} />
           </View>
           <Text style={styles.greeting}>{s.welcomeGreeting}</Text>
         </View>
@@ -53,7 +54,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarEmoji: { fontSize: 64 },
   greeting: {
     ...typography.title,
     color: colors.ink,

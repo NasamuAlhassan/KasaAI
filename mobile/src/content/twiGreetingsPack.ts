@@ -9,6 +9,7 @@ export const twiGreetingsPack: ScenarioPack = {
   id: 'greetings-twi',
   direction: 'learn-twi',
   title: 'Greetings & basics',
+  icon: 'hand-wave',
   emoji: '🙌',
   color: '#C1272D',
   version: 1,

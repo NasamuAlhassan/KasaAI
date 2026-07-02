@@ -12,6 +12,7 @@ export const marketPack: ScenarioPack = {
   id: 'market-en',
   direction: 'learn-en',
   title: 'Dwabɔ ne adetɔn',
+  icon: 'basket',
   emoji: '🧺',
   color: '#1E7A46',
   version: 1,

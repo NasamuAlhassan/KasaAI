@@ -8,6 +8,7 @@ export const transportPack: ScenarioPack = {
   id: 'transport-en',
   direction: 'learn-en',
   title: 'Akwantuo (trotro, taxi)',
+  icon: 'bus',
   emoji: '🚐',
   color: '#E8A317',
   version: 1,

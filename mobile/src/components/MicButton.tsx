@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, typography } from '../theme/tokens';
 
 export type MicState = 'idle' | 'recording' | 'thinking';
@@ -45,7 +46,11 @@ export function MicButton({ state, label, onPress }: Props) {
         {busy ? (
           <ActivityIndicator color={colors.onColor} size="large" />
         ) : (
-          <Text style={styles.icon}>{state === 'recording' ? '⏺' : '🎤'}</Text>
+          <Ionicons
+            name={state === 'recording' ? 'stop' : 'mic'}
+            size={56}
+            color={colors.onColor}
+          />
         )}
       </Pressable>
       <Text style={styles.label}>{label}</Text>
@@ -67,6 +72,5 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
   },
-  icon: { fontSize: 56 },
   label: { ...typography.label, color: colors.ink },
 });

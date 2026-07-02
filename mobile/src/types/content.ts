@@ -37,8 +37,10 @@ export interface ScenarioPack {
   direction: DirectionId;
   /** Pack name in the bridge language. */
   title: string;
-  /** Placeholder icon until real Ghanaian illustrations land (PRD 6.5). */
-  emoji: string;
+  /** MaterialCommunityIcons glyph name (vector icon, per the design system). */
+  icon?: string;
+  /** Legacy emoji fallback if no vector icon is set. */
+  emoji?: string;
   /** Accent colour for the tile. */
   color: string;
   phrases: Phrase[];
