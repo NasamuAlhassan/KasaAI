@@ -38,13 +38,20 @@ checklist to bring it live, then what's next.
    (Dashboard → Project Settings → API).
 6. `cd mobile && npx expo start` → open in Expo Go. Streaks now sync to the cloud.
 
-### B. Turn on real speech (~10 min + hosting) — unlocks Phase 3
+### B. Turn on real speech (~10 min) — unlocks Phase 3
 7. `supabase functions deploy speak transcribe respond`
-8. `cp supabase/.env.example supabase/.env`, fill in the keys you have:
-   - **Khaya** key (you said you'd get this from GhanaNLP)
-   - **Gemini** key (https://aistudio.google.com — free)
+8. `cp supabase/.env.example supabase/.env`, fill in the keys you have. **Khaya
+   is now optional** — TTS runs on Abena for both languages and prefers Khaya
+   automatically once you add it, so you can start with just:
+   - **Abena**: `ABENA_API_KEY` can stay **blank** — their playground tier needs
+     no signup. Covers both Twi and English TTS.
+   - **Gemini** key (https://aistudio.google.com — free) for KasaAI's replies.
    - **Whisper via Groq** (decided): free key at https://console.groq.com →
      paste as `WHISPER_API_KEY`. Base URL + model are already pre-set for Groq.
+   - **Khaya** (optional, add later): once you have the GhanaNLP key, `speak`
+     prefers it for Twi automatically and falls back to Abena if it ever fails.
+     Still required for Twi *speech recognition*, but that's only used by the
+     reverse "learn Twi" direction, not the main one.
 9. `supabase secrets set --env-file supabase/.env`
 
 Each key you add lights up that service; until then the app uses its local

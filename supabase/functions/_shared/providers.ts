@@ -4,10 +4,18 @@
  * All keys come from Supabase secrets (Deno.env), never the device. Each service
  * routes by language so the same endpoint serves both directions.
  *
- * IMPORTANT — verify against live docs before launch: the exact Khaya/Abena
- * request shapes below are best-effort and marked TODO(verify). Base URLs and
- * paths are env-configurable precisely so you can correct them without code
- * changes. Whisper (OpenAI-compatible) and Gemini shapes are stable.
+ * TTS is Abena-first: Abena covers both Twi and English (Ghanaian accent) voices
+ * from a single, no-signup-required API, so the app can run on Abena alone.
+ * Khaya is preferred for Twi *when a key is configured* (better quality / special
+ * character handling per GhanaNLP), with an automatic fallback to Abena if the
+ * Khaya call fails for any reason — so a wrong/missing Khaya key never breaks
+ * Twi speech, it just quietly uses Abena instead.
+ *
+ * IMPORTANT — verify against live docs before launch: the Khaya request shape
+ * below is still best-effort (TODO(verify); GhanaNLP's TTS/ASR paths are behind
+ * their developer-portal signup). The Abena shape was confirmed against their
+ * published docs at abena.mobobi.com/playground/sdk/docs/. Whisper
+ * (OpenAI-compatible) and Gemini shapes are stable.
  */
 
 export type LanguageCode = 'twi' | 'en';
@@ -15,7 +23,7 @@ export type LanguageCode = 'twi' | 'en';
 const env = (k: string, fallback = '') => Deno.env.get(k) ?? fallback;
 
 // ---------------------------------------------------------------------------
-// Text-to-speech: Twi -> Khaya, Ghanaian English -> Abena. Returns base64 audio.
+// Text-to-speech. Returns base64 audio.
 // ---------------------------------------------------------------------------
 export interface SpeakResult {
   audioBase64: string;
@@ -26,8 +34,14 @@ export async function speak(
   text: string,
   lang: LanguageCode,
 ): Promise<SpeakResult> {
-  if (lang === 'twi') return khayaTts(text);
-  return abenaTts(text);
+  if (lang === 'twi' && env('KHAYA_API_KEY')) {
+    try {
+      return await khayaTts(text);
+    } catch (e) {
+      console.warn(`Khaya TTS failed, falling back to Abena: ${e}`);
+    }
+  }
+  return abenaTts(text, lang);
 }
 
 async function khayaTts(text: string): Promise<SpeakResult> {
@@ -46,10 +60,18 @@ async function khayaTts(text: string): Promise<SpeakResult> {
   return { audioBase64: toBase64(buf), mime: 'audio/wav' };
 }
 
-async function abenaTts(text: string): Promise<SpeakResult> {
-  // TODO(verify): confirm Abena endpoint/body (abena.mobobi.com).
-  const base = env('ABENA_BASE_URL', 'https://abena.mobobi.com/api');
-  const res = await fetch(`${base}/tts`, {
+async function abenaTts(text: string, lang: LanguageCode): Promise<SpeakResult> {
+  // Confirmed shape (abena.mobobi.com/playground/sdk/docs/): auth is optional
+  // (free playground tier), response is JSON with audio_base64 + mime_type —
+  // not raw bytes. Voice IDs pick the language; override via env if Abena
+  // renames/adds voices.
+  const base = env('ABENA_BASE_URL', 'https://abena.mobobi.com/playground/api/v1');
+  const voice =
+    lang === 'twi'
+      ? env('ABENA_TWI_VOICE', 'abena_twi_high')
+      : env('ABENA_EN_VOICE', 'akua_eng');
+
+  const res = await fetch(`${base}/tts/synthesize/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -57,11 +79,12 @@ async function abenaTts(text: string): Promise<SpeakResult> {
         Authorization: `Bearer ${env('ABENA_API_KEY')}`,
       }),
     },
-    body: JSON.stringify({ text, language: 'en-GH' }),
+    body: JSON.stringify({ text, voice, speed: 1.0 }),
   });
   if (!res.ok) throw new Error(`Abena TTS ${res.status}: ${await res.text()}`);
-  const buf = new Uint8Array(await res.arrayBuffer());
-  return { audioBase64: toBase64(buf), mime: 'audio/wav' };
+  const data = await res.json();
+  if (!data.audio_base64) throw new Error('Abena TTS: no audio_base64 in response');
+  return { audioBase64: data.audio_base64, mime: data.mime_type ?? 'audio/wav' };
 }
 
 // ---------------------------------------------------------------------------
