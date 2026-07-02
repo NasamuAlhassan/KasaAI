@@ -3,6 +3,7 @@
  * cached file (offline packs), and resolves when the clip finishes so callers can
  * sequence prompts (situation -> target phrase).
  */
+import { Platform } from 'react-native';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
 
@@ -65,13 +66,34 @@ function extensionFor(mime: string): string {
   return 'm4a';
 }
 
+function base64ToBlobUrl(base64: string, mime: string): string {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return URL.createObjectURL(new Blob([bytes], { type: mime }));
+}
+
 export async function playBase64Audio(
   audioBase64: string,
   mime: string,
 ): Promise<void> {
   stopPlayback();
+  await setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+
+  // expo-file-system has no web implementation at all; the browser-native way
+  // to play in-memory audio bytes is a Blob object URL, which createAudioPlayer
+  // accepts as a plain source URI just like a file:// path on native.
+  if (Platform.OS === 'web') {
+    const url = base64ToBlobUrl(audioBase64, mime);
+    try {
+      await awaitPlayer(createAudioPlayer(url));
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+    return;
+  }
+
   const path = `${FileSystem.cacheDirectory}kasa-tts-${Date.now()}.${extensionFor(mime)}`;
   await FileSystem.writeAsStringAsync(path, audioBase64, { encoding: 'base64' });
-  await setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   return awaitPlayer(createAudioPlayer(path));
 }

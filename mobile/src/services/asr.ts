@@ -9,10 +9,10 @@
  * still runs; `isReal` drives the "demo feedback" tag in the UI.
  */
 
-import * as FileSystem from 'expo-file-system/legacy';
 import type { LanguageCode } from '../types/content';
 import { isSupabaseConfigured } from '../config/env';
 import { remoteTranscribe } from './remote';
+import { readAudioUri } from './audioBytes';
 
 export interface TranscribeOptions {
   /** Simulation hint for the mock only. Real ASR providers ignore this. */
@@ -27,14 +27,6 @@ export interface AsrProvider {
   ): Promise<string>;
   /** True once a real backend is connected; UI shows honest feedback state. */
   readonly isReal: boolean;
-}
-
-function mimeFor(uri: string): string {
-  const lower = uri.toLowerCase();
-  if (lower.endsWith('.wav')) return 'audio/wav';
-  if (lower.endsWith('.mp3')) return 'audio/mpeg';
-  if (lower.endsWith('.caf')) return 'audio/x-caf';
-  return 'audio/m4a'; // expo-audio HIGH_QUALITY default
 }
 
 /**
@@ -79,10 +71,8 @@ class RemoteAsrProvider implements AsrProvider {
   ): Promise<string> {
     try {
       if (!uri) throw new Error('no recording uri');
-      const audioBase64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: 'base64',
-      });
-      return await remoteTranscribe(audioBase64, mimeFor(uri), lang);
+      const { base64, mime } = await readAudioUri(uri);
+      return await remoteTranscribe(base64, mime, lang);
     } catch (e) {
       console.warn('[kasa] remote ASR failed, using mock:', e);
       return this.fallback.transcribe(uri, lang, opts);
