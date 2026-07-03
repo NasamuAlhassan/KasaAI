@@ -17,6 +17,7 @@ import type { LanguageCode } from '../types/content';
 import { isSupabaseConfigured } from '../config/env';
 import { remoteSpeak } from './remote';
 import { playBase64Audio, stopPlayback } from './audioPlayback';
+import { getSpeaking, setSpeaking, subscribeSpeaking } from './speakingState';
 
 export interface TtsProvider {
   speak(text: string, lang: LanguageCode): Promise<void>;
@@ -55,26 +56,17 @@ class DeviceTtsProvider {
 /** Prefers real voices from the backend; falls back to the device voice. */
 class SmartTtsProvider implements TtsProvider {
   private device = new DeviceTtsProvider();
-  private listeners = new Set<(speaking: boolean) => void>();
-  private _isSpeaking = false;
 
   get isSpeaking(): boolean {
-    return this._isSpeaking;
+    return getSpeaking();
   }
 
   subscribe(listener: (speaking: boolean) => void): () => void {
-    this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
-  }
-
-  private setSpeaking(value: boolean): void {
-    if (this._isSpeaking === value) return;
-    this._isSpeaking = value;
-    for (const l of this.listeners) l(value);
+    return subscribeSpeaking(listener);
   }
 
   async speak(text: string, lang: LanguageCode): Promise<void> {
-    this.setSpeaking(true);
+    setSpeaking(true);
     try {
       if (isSupabaseConfigured) {
         try {
@@ -87,14 +79,14 @@ class SmartTtsProvider implements TtsProvider {
       }
       await this.device.speak(text, lang);
     } finally {
-      this.setSpeaking(false);
+      setSpeaking(false);
     }
   }
 
   stop(): void {
     stopPlayback();
     this.device.stop();
-    this.setSpeaking(false);
+    setSpeaking(false);
   }
 }
 

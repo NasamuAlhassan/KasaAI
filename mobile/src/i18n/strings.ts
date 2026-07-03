@@ -46,7 +46,7 @@ const twi: Strings = {
   welcomeGreeting: 'Akwaaba! Me din de KasaAI. M’ani agye sɛ woaba.',
   welcomeTapToStart: 'Fa wo nsa ka ha na yɛnkɔ so.',
   chooseLanguagePrompt:
-    'Kasa bɛn na wopɛ sɛ wosua? Mia bobɔn no wɔ nea wopɛ so.',
+    'Sɛ wopɛ sɛ yɛkasa Twi a, mia bobɔn a ɛwɔ benkum so. Sɛ wopɛ English a, mia nea ɛwɔ nifa so.',
   learnEnglish: 'Mepɛ sɛ mesua English',
   learnTwi: 'I want to learn Twi',
   onboardingTitle: 'Sɛnea yɛbɛyɛ',
@@ -82,7 +82,8 @@ const twi: Strings = {
 const en: Strings = {
   welcomeGreeting: 'Welcome! My name is KasaAI. I’m glad you came.',
   welcomeTapToStart: 'Tap anywhere to begin.',
-  chooseLanguagePrompt: 'Which language do you want to learn? Tap your choice.',
+  chooseLanguagePrompt:
+    'If you want us to speak Twi, press the button on the left. If you want English, press the one on the right.',
   learnEnglish: 'Mepɛ sɛ mesua English', // Twi learner won't pick this; kept for parity
   learnTwi: 'I want to learn Twi',
   onboardingTitle: 'How this works',

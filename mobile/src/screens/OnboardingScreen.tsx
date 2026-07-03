@@ -11,6 +11,7 @@ import { colors, spacing, typography } from '../theme/tokens';
 import { BigButton } from '../components/BigButton';
 import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import { tts } from '../services/tts';
+import { speakStatic, STATIC_AUDIO } from '../services/staticVoice';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
 import { DIRECTIONS } from '../types/content';
@@ -22,7 +23,9 @@ export function OnboardingScreen({ navigation }: ScreenProps<'Onboarding'>) {
   const s = stringsFor(bridge);
 
   useEffect(() => {
-    tts.speak(s.onboardingBody, bridge);
+    const asset =
+      bridge === 'twi' ? STATIC_AUDIO.onboardingBodyTwi : STATIC_AUDIO.onboardingBodyEn;
+    speakStatic(asset, s.onboardingBody, bridge);
     return () => tts.stop();
   }, [s.onboardingBody, bridge]);
 

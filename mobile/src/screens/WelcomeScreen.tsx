@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography } from '../theme/tokens';
 import { tts } from '../services/tts';
+import { speakStatic, STATIC_AUDIO } from '../services/staticVoice';
 import { stringsFor } from '../i18n/strings';
 import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import type { ScreenProps } from '../navigation/types';
@@ -17,7 +18,7 @@ export function WelcomeScreen({ navigation }: ScreenProps<'Welcome'>) {
   const s = stringsFor('twi');
 
   useEffect(() => {
-    tts.speak(s.welcomeGreeting, 'twi');
+    speakStatic(STATIC_AUDIO.welcomeGreetingTwi, s.welcomeGreeting, 'twi');
     return () => tts.stop();
   }, [s.welcomeGreeting]);
 

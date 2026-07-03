@@ -11,6 +11,7 @@ import { colors, spacing, typography } from '../theme/tokens';
 import { BigButton } from '../components/BigButton';
 import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import { tts } from '../services/tts';
+import { speakStatic, STATIC_AUDIO } from '../services/staticVoice';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
 import type { DirectionId } from '../types/content';
@@ -21,7 +22,7 @@ export function LanguageSelectScreen({ navigation }: ScreenProps<'LanguageSelect
   const { chooseDirection } = useProgress();
 
   useEffect(() => {
-    tts.speak(s.chooseLanguagePrompt, 'twi');
+    speakStatic(STATIC_AUDIO.chooseLanguageTwi, s.chooseLanguagePrompt, 'twi');
     return () => tts.stop();
   }, [s.chooseLanguagePrompt]);
 
@@ -36,17 +37,21 @@ export function LanguageSelectScreen({ navigation }: ScreenProps<'LanguageSelect
       <Text style={styles.prompt}>{s.chooseLanguagePrompt}</Text>
       <SpeakingIndicator bridge="twi" />
       <View style={styles.buttons}>
+        {/* Left = continue in Twi (learn English). Right = continue in English
+            (learn Twi) — matches the spoken left/right instruction above. */}
         <BigButton
           label={s.learnEnglish}
           speakLang="twi"
           color={colors.green}
           onPress={() => pick('learn-en')}
+          style={styles.buttonHalf}
         />
         <BigButton
           label={s.learnTwi}
           speakLang="en"
           color={colors.red}
           onPress={() => pick('learn-twi')}
+          style={styles.buttonHalf}
         />
       </View>
       <View style={styles.hintRow}>
@@ -60,7 +65,8 @@ export function LanguageSelectScreen({ navigation }: ScreenProps<'LanguageSelect
 const styles = StyleSheet.create({
   container: { flex: 1, padding: spacing.lg, justifyContent: 'center', gap: spacing.xl },
   prompt: { ...typography.title, color: colors.ink, textAlign: 'center' },
-  buttons: { gap: spacing.md },
+  buttons: { flexDirection: 'row', gap: spacing.md },
+  buttonHalf: { flex: 1, minHeight: 140 },
   hintRow: {
     flexDirection: 'row',
     alignItems: 'center',

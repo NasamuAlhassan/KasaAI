@@ -12,6 +12,7 @@ import { colors, spacing, typography } from '../theme/tokens';
 import { BigButton } from '../components/BigButton';
 import { SpeakingIndicator } from '../components/SpeakingIndicator';
 import { tts } from '../services/tts';
+import { speakStatic, STATIC_AUDIO } from '../services/staticVoice';
 import { stringsFor } from '../i18n/strings';
 import { useProgress } from '../state/progress';
 import { DIRECTIONS } from '../types/content';
@@ -24,7 +25,8 @@ export function ConsentScreen({ navigation }: ScreenProps<'Consent'>) {
   const [improve, setImprove] = useState(false);
 
   useEffect(() => {
-    tts.speak(s.consentBody, bridge);
+    const asset = bridge === 'twi' ? STATIC_AUDIO.consentBodyTwi : STATIC_AUDIO.consentBodyEn;
+    speakStatic(asset, s.consentBody, bridge);
     return () => tts.stop();
   }, [s.consentBody, bridge]);
 

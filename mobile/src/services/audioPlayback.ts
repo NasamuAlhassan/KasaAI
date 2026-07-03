@@ -59,6 +59,17 @@ export async function playUri(uri: string): Promise<void> {
   return awaitPlayer(createAudioPlayer(uri));
 }
 
+/**
+ * Play a bundled local asset, e.g. `playAsset(require('../../assets/audio/x.wav'))`.
+ * Zero network round-trip — for fixed strings (onboarding copy) that never
+ * change, this is instant instead of waiting on a live TTS call every time.
+ */
+export async function playAsset(moduleRef: number): Promise<void> {
+  stopPlayback();
+  await setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+  return awaitPlayer(createAudioPlayer(moduleRef));
+}
+
 function extensionFor(mime: string): string {
   if (mime.includes('mpeg') || mime.includes('mp3')) return 'mp3';
   if (mime.includes('wav')) return 'wav';
