@@ -24,14 +24,26 @@ export function stopPlayback(): void {
  * "didJustFinish" event can never leave a prompt awaiting forever. */
 const MAX_CLIP_MS = 20000;
 
-/** Play an already-created player and resolve when it finishes. */
+/**
+ * How long to wait before checking that playback actually started. Browsers
+ * block `.play()` before any user gesture on the page (NotAllowedError) —
+ * that rejection happens deep inside expo-audio's web player on a promise we
+ * never see, so we can't catch it directly. Instead, if playback hasn't
+ * actually started shortly after we asked it to, treat that as a failure and
+ * bail immediately rather than sitting through the full 20s timeout.
+ */
+const START_CHECK_MS = 400;
+
+/** Play an already-created player and resolve when it finishes (rejects if
+ * playback never actually started, e.g. blocked by browser autoplay policy). */
 function awaitPlayer(player: AudioPlayer): Promise<void> {
   current = player;
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     let settled = false;
     const finish = () => {
       if (settled) return;
       settled = true;
+      clearTimeout(startCheck);
       clearTimeout(timer);
       sub?.remove?.();
       if (current === player) {
@@ -44,9 +56,28 @@ function awaitPlayer(player: AudioPlayer): Promise<void> {
       }
       resolve();
     };
+    const fail = (reason: string) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(startCheck);
+      clearTimeout(timer);
+      sub?.remove?.();
+      if (current === player) {
+        try {
+          player.remove();
+        } catch {
+          // ignore
+        }
+        current = null;
+      }
+      reject(new Error(reason));
+    };
     const sub = player.addListener('playbackStatusUpdate', (status) => {
       if (status.didJustFinish) finish();
     });
+    const startCheck = setTimeout(() => {
+      if (!player.playing) fail('playback did not start (blocked or failed)');
+    }, START_CHECK_MS);
     const timer = setTimeout(finish, MAX_CLIP_MS);
     player.play();
   });

@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ProgressProvider } from './src/state/progress';
 import { PacksProvider } from './src/state/packs';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import './src/services/silenceAutoplayNoise';
 
 export default function App() {
   return (
